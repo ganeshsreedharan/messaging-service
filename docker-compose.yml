@@ -1,0 +1,40 @@
+version: '3.1'
+services:
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - rabbitmq_go_net
+  app:
+    container_name: app-messaging-service
+    image: app-messaging-service
+    build: ./
+    ports:
+      - "9090:9090"
+    depends_on:
+      - dbpostgresql
+      - kafka
+      - zookeeper
+      - rabbitmq
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/messaging-database
+      - SPRING_DATASOURCE_USERNAME=message_postgres_user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_RABBITMQ_HOST=localhost
+      - SPRING_RABBITMQ_PORT=5672
+  dbpostgresql:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=message_postgres_user
+      - POSTGRES_DB=messaging-database
+networks:
+  rabbitmq_go_net:
+    driver: bridge
