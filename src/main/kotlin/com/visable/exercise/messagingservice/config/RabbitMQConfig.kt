@@ -12,7 +12,6 @@ class RabbitMQConfig {
 
     companion object {
         const val CHAT_MESSAGING_QUEUE = "chat_messaging_queue"
-        const val INCOMING_EXCHANGE = "incoming_exchange"
         const val OUTGOING_EXCHANGE = "outgoing_exchange"
     }
 
@@ -20,10 +19,7 @@ class RabbitMQConfig {
     fun createChatMessagingQueue(): Queue = QueueBuilder.durable(CHAT_MESSAGING_QUEUE).build()
 
 
-    @Bean
-    fun createIncomingExchange(): TopicExchange = ExchangeBuilder.topicExchange(INCOMING_EXCHANGE).build()
-
-
+    //preferring fanout exchange same message can push to multiple queues for processing different ways
     @Bean
     fun createOutgoingExchange(): FanoutExchange = ExchangeBuilder.fanoutExchange(OUTGOING_EXCHANGE).build()
 

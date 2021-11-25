@@ -20,35 +20,22 @@ fun MessageUserDto.toUser() = MessageUser(nickName = nickName, createdDate = Loc
 data class MessageContentDto(
     @get:Min(value = 1, message = "Recipient id(to) should greater than zero ")
     val to: Long,
-
     @get:NotBlank(message = "Message content should not be null or blank ")
     val content: String
 )
 
 data class SendMessagesQuery(
-    @RequestParam(required = false)
     val to: Long?,
-    @RequestParam(required = false,defaultValue = "0")
     val page: Long = 0 ,
-    @RequestParam(required = false,defaultValue = "10")
     val size: Long = 10,
-
     val sort:String ="createdDate",
-
     val dir:String =Sort.Direction.DESC.toString()
 )
 
 data class ReceiveMessagesQuery(
-    @RequestParam(required = false)
     var from: Long?,
-
-    @RequestParam(required = false,defaultValue = "0")
     var page: Long = 0,
-
-    @RequestParam(required = false,defaultValue = "0")
     var size: Long = 10,
-
     val sort:String ="createdDate",
-
     val dir:String =Sort.Direction.DESC.toString()
 )

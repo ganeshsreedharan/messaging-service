@@ -2,18 +2,15 @@ package com.visable.exercise.messagingservice.controller
 
 import com.visable.exercise.messagingservice.constant.MessagingConstants
 import com.visable.exercise.messagingservice.controller.dto.*
+import com.visable.exercise.messagingservice.exception.MessageNotFoundException
 import com.visable.exercise.messagingservice.model.Message
 import com.visable.exercise.messagingservice.service.MessageService
-import com.visable.exercise.messagingservice.service.SendMessageHandlerService
 import io.swagger.annotations.*
-import org.springframework.data.domain.Sort
+import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PagedResourcesAssembler
 import org.springframework.hateoas.EntityModel
 import org.springframework.hateoas.PagedModel
 import org.springframework.hateoas.server.mvc.linkTo
-import org.springframework.messaging.handler.annotation.MessageMapping
-import org.springframework.messaging.handler.annotation.Payload
-import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.web.bind.annotation.*
 import javax.validation.Valid
 
@@ -64,11 +61,16 @@ class MessageController(
         sort: String,
         @RequestParam(required = false, defaultValue = "DESC")
         dir: String
-    ): PagedModel<EntityModel<Message>> =
-        pagedResourcesAssembler.toModel(
-            messageService.getMessagesSendByUser(SendMessagesQuery(to, page, size, sort, dir)),
-            linkTo<MessageController> { getAllSendMessages(to, page, size, sort, dir) }.withSelfRel()
-        )
+    ): PagedModel<EntityModel<Message>> {
+        val mySendMessages = messageService.getMessagesSendByUser(SendMessagesQuery(to, page, size, sort, dir))
+        if (mySendMessages.content.size > 0) {
+            pagedResourcesAssembler.toModel(
+                mySendMessages,
+                linkTo<MessageController> { getAllSendMessages(to, page, size, sort, dir) }.withSelfRel()
+            )
+        }
+        throw MessageNotFoundException("Messages not found")
+    }
 
     @ApiOperation(value = "Api for getting messages received by the user")
     @ApiResponses(
@@ -89,10 +91,15 @@ class MessageController(
         sort: String,
         @RequestParam(required = false, defaultValue = "DESC")
         dir: String
-    ): PagedModel<EntityModel<Message>> =
-        pagedResourcesAssembler.toModel(
-            messageService.getMessagesReceivedByUser(ReceiveMessagesQuery(from, page, size, sort, dir)),
-            linkTo<MessageController> { getAllReceivedMessages(from, page, size, sort, dir) }.withSelfRel()
-        )
-
+    ): PagedModel<EntityModel<Message>> {
+        val myReceivedMessages =
+            messageService.getMessagesReceivedByUser(ReceiveMessagesQuery(from, page, size, sort, dir))
+        if (myReceivedMessages.content.size > 0) {
+            return pagedResourcesAssembler.toModel(
+                myReceivedMessages,
+                linkTo<MessageController> { getAllReceivedMessages(from, page, size, sort, dir) }.withSelfRel()
+            )
+        }
+        throw MessageNotFoundException("Messages not found")
+    }
 }

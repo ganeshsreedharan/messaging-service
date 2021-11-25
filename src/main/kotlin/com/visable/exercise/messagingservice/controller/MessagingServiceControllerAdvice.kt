@@ -1,6 +1,7 @@
 package com.visable.exercise.messagingservice.controller
 
 import com.visable.exercise.messagingservice.controller.dto.ErrorMessage
+import com.visable.exercise.messagingservice.exception.MessageNotFoundException
 import com.visable.exercise.messagingservice.exception.UserNotFoundException
 import com.visable.exercise.messagingservice.exception.UserNotPermittedException
 import org.hibernate.exception.ConstraintViolationException
@@ -31,6 +32,14 @@ class MessagingServiceControllerAdvice {
         log.error("User not found exception happened :  ${ex.message } ")
         val error = ErrorMessage(Date(),"USER_NOT_FOUND",message = ex.message!!)
         return ResponseEntity(error,HttpStatus.NOT_FOUND) // Also, can use HttpStatus.NO_CONTENT
+    }
+
+    @ExceptionHandler(value = [MessageNotFoundException::class])
+    @ResponseBody
+    fun handleMessageNotFoundException(ex: MessageNotFoundException, request: WebRequest): ResponseEntity<ErrorMessage> {
+        log.error("Message not found exception happened :  ${ex.message } ")
+        val error = ErrorMessage(Date(),"MESSAGE_NOT_FOUND",message = ex.message!!)
+        return ResponseEntity(error,HttpStatus.NO_CONTENT)
     }
 
     @ExceptionHandler(value = [UserNotPermittedException::class])

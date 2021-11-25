@@ -1,6 +1,6 @@
-package com.visable.exercise.messagingservice.model;
+package com.visable.exercise.messagingservice.model
 import java.io.Serializable
-import java.util.*
+import java.time.LocalDateTime
 import javax.persistence.*
 
 @Entity
@@ -12,7 +12,7 @@ class Message(
     @OneToOne @JoinColumn(name = "receiver_id" )
     val receiver: MessageUser,
     val messageContent: String,
-    val createdDate: Date
+    val createdDate: LocalDateTime
 )
 fun Message.toMessagePayload() = MessagePayload(
     sender = sender.nickName,

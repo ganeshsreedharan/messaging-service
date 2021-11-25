@@ -1,9 +1,8 @@
-package com.visable.exercise.messagingservice.config.filter
+package com.visable.exercise.messagingservice.controller.filter
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.visable.exercise.messagingservice.config.LoggedInUserData
 import com.visable.exercise.messagingservice.constant.MessagingConstants
-import com.visable.exercise.messagingservice.constant.MessagingConstants.UNSECURE_URLS
 import com.visable.exercise.messagingservice.controller.dto.ErrorMessage
 import com.visable.exercise.messagingservice.service.UserService
 import org.springframework.core.Ordered

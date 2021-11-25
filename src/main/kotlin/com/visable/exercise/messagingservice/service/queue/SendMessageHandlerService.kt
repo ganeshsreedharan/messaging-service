@@ -1,4 +1,4 @@
-package com.visable.exercise.messagingservice.service
+package com.visable.exercise.messagingservice.service.queue
 
 import com.visable.exercise.messagingservice.config.RabbitMQConfig
 import com.visable.exercise.messagingservice.model.MessagePayload

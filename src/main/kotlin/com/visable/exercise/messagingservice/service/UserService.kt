@@ -10,8 +10,6 @@ import java.util.*
 
 @Service
 class UserService(private val userRepository: UserRepository) {
-
     fun registerUser(userDto: MessageUserDto):MessageUser = userRepository.save(userDto.toUser())
-
     fun getUser(userId: Long): MessageUser? = userRepository.findById(userId).orElse(null)
 }

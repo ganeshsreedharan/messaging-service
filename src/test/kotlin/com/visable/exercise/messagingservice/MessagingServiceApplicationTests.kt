@@ -2,8 +2,11 @@ package com.visable.exercise.messagingservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
+import org.testcontainers.junit.jupiter.Testcontainers
 
-@SpringBootTest
+
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class MessagingServiceApplicationTests {
 
 	@Test
