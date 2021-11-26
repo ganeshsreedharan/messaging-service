@@ -67,6 +67,7 @@ class MessageServiceTest @Autowired constructor(val messageService: MessageServi
         val pageable1: Pageable = PageRequest.of(recieveMessageQuery.page.toInt(), recieveMessageQuery.size.toInt(), Sort.by(Sort.Direction.valueOf(recieveMessageQuery.dir), recieveMessageQuery.sort))
         Mockito.`when`(messageRepository.findAllByReceiverUserId(2,pageable1)).thenReturn(result)
 
+        Mockito.`when`(messageRepository.findAllBySenderUserIdAndReceiverUserId(1,2,pageable1)).thenReturn(result)
         sendMessagesQuery=  SendMessagesQuery(page =0,size = 5,sort = "createdDate",dir = "DESC",to = null)
         val pageable2: Pageable = PageRequest.of(sendMessagesQuery.page.toInt(), sendMessagesQuery.size.toInt(), Sort.by(Sort.Direction.valueOf(recieveMessageQuery.dir), recieveMessageQuery.sort))
         Mockito.`when`(messageRepository.findAllBySenderUserId(1,pageable2)).thenReturn(result)
@@ -95,6 +96,7 @@ class MessageServiceTest @Autowired constructor(val messageService: MessageServi
 
     @Test
     fun `when logged in user data not initialised with userFilter`(){
+        loggedInUserData.userDetails = null
         Mockito.`when`(userService.getUser(2L)).thenReturn(recieverUser)
         val ex = assertThrows<UserNotPermittedException> {  messageService.sendMessage(MessageContentDto(2, "test msg")) }
         assert(ex.message!!.contains("cannot send message"))
@@ -112,10 +114,21 @@ class MessageServiceTest @Autowired constructor(val messageService: MessageServi
 
     @Test
     fun `when getting received messages - when logged in user data not initialised with userFilter`(){
+        loggedInUserData.userDetails = null
         Mockito.`when`(userService.getUser(2L)).thenReturn(recieverUser)
         assertThrows<UserNotPermittedException> {
              messageService.getMessagesReceivedByUser(recieveMessageQuery)
         }
+    }
+
+    @Test
+    fun `when getting all received messages for Test User 1 from Test User 2`(){
+        loggedInUserData.userDetails = recieverUser;
+        Mockito.`when`(userService.getUser(1L)).thenReturn(loggedInUser)
+        recieveMessageQuery.from =loggedInUser.userId
+        val result = messageService.getMessagesReceivedByUser(recieveMessageQuery)
+        assert(result.content.size >0)
+        assert(result.content[0].receiver.userId == recieverUser.userId)
     }
 
 }
